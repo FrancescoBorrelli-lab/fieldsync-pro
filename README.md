@@ -31,58 +31,34 @@ Generazione Codice	build_runner
 ---
 
 ## 📁 Struttura del Progetto
-
+```
 lib/
-
 ├── main.dart                      # Entry point
-
 └── src/
-
     ├── core/                      # Utility e costanti
-
     │   └── theme/
-
     │       └── app_theme.dart     # Tema globale
-
     ├── data/                      # Implementazioni concrete
-
     │   ├── models/                # Modelli Isar (@collection)
-
     │   │   └── intervento_isar.dart
-
     │   └── repositories/          # Implementazione repository
-
     │       └── intervento_repository_impl.dart
-
     ├── domain/                    # Logica di business
-
     │   ├── entities/              # Domain Entities
-
     │   │   └── intervento.dart
-
     │   └── repositories/          # Interfacce repository
-
     │       └── intervento_repository.dart
-
     └── presentation/              # UI e logica di presentazione
-
         ├── pages/                 # Pagine dell'app
-        
         │   ├── home_page.dart
-
         │   ├── crea_intervento_page.dart
-
         │   ├── dettaglio_intervento_page.dart
-
         │   └── modifica_intervento_page.dart
-
         ├── providers/             # Riverpod Providers
-
         │   └── intervento_providers.dart
-
         └── widgets/               # Componenti UI riutilizzabili
-
             └── intervento_card.dart
+```
 
 ---
 
