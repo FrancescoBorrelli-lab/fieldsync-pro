@@ -201,17 +201,17 @@ tags |	List<String> |	Tag per categorizzazione
 ---
 
 ## 📝 TODO List
-[ ] Sincronizzazione completa con backend
+- [ ] Sincronizzazione completa con backend
 
-[ ] Filtri e ricerca interventi
+- [ ] Filtri e ricerca interventi
 
-[ ] Notifiche push
+- [ ] Notifiche push
 
-[ ] Supporto multiplatform (iOS, Android, Web)
+- [ ] Supporto multiplatform (iOS, Android, Web)
 
-[ ] Export/Import dati
+- [ ] Export/Import dati
 
-[ ] Report e statistiche
+- [ ] Report e statistiche
 
 ---
 
