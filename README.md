@@ -202,10 +202,15 @@ tags |	List<String> |	Tag per categorizzazione
 
 ## 📝 TODO List
 [ ] Sincronizzazione completa con backend
+
 [ ] Filtri e ricerca interventi
+
 [ ] Notifiche push
+
 [ ] Supporto multiplatform (iOS, Android, Web)
+
 [ ] Export/Import dati
+
 [ ] Report e statistiche
 
 ---
