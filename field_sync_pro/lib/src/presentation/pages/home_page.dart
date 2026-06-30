@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/intervento_providers.dart';
 import '../widgets/intervento_card.dart';
-import 'crea_intervento_page.dart';  // ← AGGIUNGI QUESTO IMPORT
+import 'crea_intervento_page.dart';
+import 'dettaglio_intervento_page.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -77,6 +78,14 @@ class HomePage extends ConsumerWidget {
                 intervento: intervento,
                 onTap: () {
                   // Naviga al dettaglio
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DettaglioInterventoPage(
+                        interventoId: intervento.id,
+                      ),
+                    ),
+                  );
                 },
                 onDelete: () {
                   ref.read(interventoStateProvider.notifier)

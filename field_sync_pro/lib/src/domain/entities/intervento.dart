@@ -24,6 +24,34 @@ class Intervento {
     this.tags = const [],
     this.metadata,
   });
+
+  Intervento copyWith({
+    String? id,
+    String? titolo,
+    String? descrizione,
+    String? cliente,
+    String? tecnicoAssegnato,
+    DateTime? dataCreazione,
+    DateTime? dataScadenza,
+    InterventoStato? stato,
+    Priorita? priorita,
+    List<String>? tags,
+    Map<String, dynamic>? metadata,
+  }) {
+    return Intervento(
+      id: id ?? this.id,
+      titolo: titolo ?? this.titolo,
+      descrizione: descrizione ?? this.descrizione,
+      cliente: cliente ?? this.cliente,
+      tecnicoAssegnato: tecnicoAssegnato ?? this.tecnicoAssegnato,
+      dataCreazione: dataCreazione ?? this.dataCreazione,
+      dataScadenza: dataScadenza ?? this.dataScadenza,
+      stato: stato ?? this.stato,
+      priorita: priorita ?? this.priorita,
+      tags: tags ?? this.tags,
+      metadata: metadata ?? this.metadata,
+    );
+  }
 }
 
 enum InterventoStato {

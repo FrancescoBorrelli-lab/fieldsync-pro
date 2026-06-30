@@ -26,9 +26,34 @@ class InterventoRepositoryImpl implements InterventoRepository {
 
   @override
   Future<void> salvaIntervento(Intervento intervento) async {
-    final isarIntervento = InterventoIsar.fromDomain(intervento);
     await isar.writeTxn(() async {
-      await isar.interventoIsars.put(isarIntervento);
+      // 🔥 CERCA SE L'INTERVENTO ESISTE GIÀ
+      final existing = await isar.interventoIsars
+          .where()
+          .filter()
+          .uuidEqualTo(intervento.id)
+          .findFirst();
+      
+      if (existing != null) {
+        // ✅ AGGIORNA L'ESISTENTE
+        existing.titolo = intervento.titolo;
+        existing.descrizione = intervento.descrizione;
+        existing.cliente = intervento.cliente;
+        existing.tecnicoAssegnato = intervento.tecnicoAssegnato;
+        existing.dataCreazione = intervento.dataCreazione;
+        existing.dataScadenza = intervento.dataScadenza;
+        existing.stato = intervento.stato.name;
+        existing.priorita = intervento.priorita.name;
+        existing.tags = intervento.tags;
+        existing.dataUltimaModifica = DateTime.now();
+        existing.sincronizzato = false;
+        
+        await isar.interventoIsars.put(existing);
+      } else {
+        // ✅ CREA UN NUOVO
+        final nuovo = InterventoIsar.fromDomain(intervento);
+        await isar.interventoIsars.put(nuovo);
+      }
     });
   }
 
@@ -69,8 +94,6 @@ class InterventoRepositoryImpl implements InterventoRepository {
 
   @override
   Future<void> sincronizza() async {
-    // TODO: Implementare logica di sincronizzazione con backend
-    // Per ora, marcamo tutti come sincronizzati
     final daSincronizzare = await isar.interventoIsars
         .where()
         .filter()
