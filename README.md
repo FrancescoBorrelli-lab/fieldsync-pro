@@ -1,17 +1,26 @@
-FieldSync-Pro
+# FieldSync-Pro
+
 Applicazione mobile (e web) per la gestione degli interventi tecnici sul campo con architettura "offline-first".
 
-📱 Panoramica
+## 📱 Panoramica
+
 FieldSync-Pro è progettata per permettere ai tecnici di:
 
 📝 Creare e gestire interventi anche senza connessione internet
+
 🔄 Sincronizzare i dati automaticamente quando si torna online
+
 📊 Visualizzare lo stato e la priorità degli interventi
+
 🏷️ Organizzare gli interventi per cliente e stato
+
 👤 Assegnare tecnici agli interventi
+
 📅 Gestire le date di scadenza
 
-🛠️ Stack Tecnologico
+---
+
+## 🛠️ Stack Tecnologico
 Componente	Tecnologia
 Framework	Flutter 3.x
 Database Locale	Isar (NoSQL)
@@ -19,36 +28,65 @@ State Management	Riverpod
 Architettura	Clean Architecture
 Generazione Codice	build_runner
 
-📁 Struttura del Progetto
-text
+---
+
+## 📁 Struttura del Progetto
+
 lib/
+
 ├── main.dart                      # Entry point
+
 └── src/
+
     ├── core/                      # Utility e costanti
+
     │   └── theme/
+
     │       └── app_theme.dart     # Tema globale
+
     ├── data/                      # Implementazioni concrete
+
     │   ├── models/                # Modelli Isar (@collection)
+
     │   │   └── intervento_isar.dart
+
     │   └── repositories/          # Implementazione repository
+
     │       └── intervento_repository_impl.dart
+
     ├── domain/                    # Logica di business
+
     │   ├── entities/              # Domain Entities
+
     │   │   └── intervento.dart
+
     │   └── repositories/          # Interfacce repository
+
     │       └── intervento_repository.dart
+
     └── presentation/              # UI e logica di presentazione
+
         ├── pages/                 # Pagine dell'app
+        
         │   ├── home_page.dart
+
         │   ├── crea_intervento_page.dart
+
         │   ├── dettaglio_intervento_page.dart
+
         │   └── modifica_intervento_page.dart
+
         ├── providers/             # Riverpod Providers
+
         │   └── intervento_providers.dart
+
         └── widgets/               # Componenti UI riutilizzabili
+
             └── intervento_card.dart
-            
-🚀 Getting Started
+
+---
+
+## 🚀 Getting Started
 
 Prerequisiti
 * Flutter SDK 3.x
@@ -56,79 +94,90 @@ Prerequisiti
 * Android Studio / VS Code
 * Installazione
 
-# 1. Clona il repository
+### 1. Clona il repository
 ```
 git clone https://github.com/yourusername/field_sync_pro.git
 cd field_sync_pro
 ```
 
-# 2. Installa le dipendenze
+### 2. Installa le dipendenze
 ```
 flutter pub get
 ```
 
-# 3. Genera i file Isar (IMPORTANTE!)
+### 3. Genera i file Isar (IMPORTANTE!)
 ```
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-# 4. Esegui l'app
+### 4. Esegui l'app
 ```
 flutter run
 ```
 
-Comandi Utili
-# Generazione codice Isar (dopo modifiche ai modelli)
+---
+
+## Comandi Utili
+### Generazione codice Isar (dopo modifiche ai modelli)
 ```
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-# Generazione in watch mode (automatica)
+### Generazione in watch mode (automatica)
 ```
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-# Pulizia e ricostruzione
+### Pulizia e ricostruzione
 ```
 flutter clean
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-# Esecuzione su dispositivi specifici
+### Esecuzione su dispositivi specifici
 ```
 flutter run -d chrome      # Web
 flutter run -d android     # Android
 flutter run -d ios         # iOS
 ```
 
-✅ Features Implementate
-Stato | Feature	
-| :---: | :---: |
-✅ | Configurazione base del progetto	
-✅ | Clean Architecture (Domain, Data, Presentation)
-✅ | Integrazione Isar (Database offline-first)
-✅ | State Management con Riverpod
-✅ | CRUD completo degli interventi
-✅ | HomePage con lista interventi
-✅ | Creazione nuovi interventi
-✅ | Modifica interventi esistenti
-✅ | Dettaglio intervento
-✅ | Eliminazione interventi
-✅ | Campo Tecnico Assegnato
-✅ | Data Scadenza intervento
-✅ | Sincronizzazione (base)
-✅ | Tema globale e styling omogeneo
-✅ | Card intervento informativa
-✅ | Priorità e Stato con colori dinamici
-✅ | Progresso avanzamento intervento
+---
 
-🎨 UI Design
+## ✅ Features Implementate
+Feature | Stato 
+| :---: | :---: |
+Configurazione base del progetto | ✅
+Clean Architecture (Domain, Data, Presentation) | ✅
+Integrazione Isar (Database offline-first) | ✅
+State Management con Riverpod | ✅
+CRUD completo degli interventi | ✅
+HomePage con lista interventi | ✅
+Creazione nuovi interventi | ✅
+Modifica interventi esistenti | ✅
+Dettaglio intervento | ✅
+Eliminazione interventi | ✅
+Campo Tecnico Assegnato | ✅
+Data Scadenza intervento | ✅
+Sincronizzazione (base) | ✅
+Tema globale e styling omogeneo | ✅
+Card intervento informativa | ✅
+Priorità e Stato con colori dinamici | ✅
+Progresso avanzamento intervento | ✅
+
+---
+
+##  🎨 UI Design
 L'app utilizza un design moderno e pulito con:
+
 * Material Design 3
+
 * Colorazione dinamica in base alla priorità e stato
+
 * Card interattive per gli interventi con informazioni complete
+
 * Feedback visivo per le azioni (SnackBar colorate)
+
 * Bottoni stilizzati coerenti in tutta l'app
 
 Palette | Colori
@@ -156,7 +205,9 @@ Completato |	🟢 Verde
 Sospeso |	🔴 Rosso
 Annullato |	⚫ Grigio scuro
 
-📊 Modello Dati
+---
+
+## 📊 Modello Dati
 Intervento
 Campo |	Tipo |	Descrizione
 | :---: | :---: | :---: |
@@ -171,7 +222,9 @@ stato |	InterventoStato |	Stato corrente
 priorita |	Priorita |	Livello di priorità
 tags |	List<String> |	Tag per categorizzazione
 
-📝 TODO List
+---
+
+## 📝 TODO List
 [ ] Sincronizzazione completa con backend
 [ ] Filtri e ricerca interventi
 [ ] Notifiche push
@@ -179,7 +232,9 @@ tags |	List<String> |	Tag per categorizzazione
 [ ] Export/Import dati
 [ ] Report e statistiche
 
-🔧 Risoluzione Problemi
+---
+
+## 🔧 Risoluzione Problemi
 
 ❌ Build error: "Namespace not specified"
 Aggiungi al file android/app/build.gradle:
@@ -215,7 +270,9 @@ dev_dependencies:
   isar_generator: 3.1.0
 ```
 
-🤝 Contributi
+---
+
+## 🤝 Contributi
 Le contribuzioni sono benvenute! Per favore:
 * Fai il fork del progetto
 * Crea un branch per la tua feature (git checkout -b feature/AmazingFeature)
@@ -223,18 +280,26 @@ Le contribuzioni sono benvenute! Per favore:
 * Fai il push del branch (git push origin feature/AmazingFeature)
 * Apri una Pull Request
 
-📄 Licenza
+---
+
+## 📄 Licenza
 Questo progetto è sotto licenza MIT. Vedi il file LICENSE per maggiori dettagli.
 
-👥 Autori
+---
+
+## 👥 Autori
 Francesco Borrelli - Sviluppatore principale
 
-🙏 Ringraziamenti
+---
+
+## 🙏 Ringraziamenti
 * Flutter Team per il framework
 * Isar Database per il database offline-first
 * Riverpod per lo state management
 
-📅 Documentazione
+---
+
+## 📅 Documentazione
 Versione: 1.0.0
 Data: 30 Giugno 2026
 Stato: 🟢 Stabile
