@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/entities/intervento.dart';
 import '../providers/intervento_providers.dart';
+import '../widgets/tags_input.dart';
 
 class ModificaInterventoPage extends ConsumerStatefulWidget {
   final String interventoId;
@@ -31,6 +32,7 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
   bool _isLoading = true;
   bool _isSaving = false;
   Intervento? _intervento;
+  List<String> _tags = [];
 
   @override
   void initState() {
@@ -55,6 +57,7 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
       _statoSelezionato = _intervento!.stato;
       _prioritaSelezionata = _intervento!.priorita;
       _dataScadenza = _intervento!.dataScadenza;
+      _tags = _intervento!.tags;  // ← AGGIUNGI QUESTA RIGA
       if (_dataScadenza != null) {
         _scadenzaController.text = DateFormat('dd/MM/yyyy').format(_dataScadenza!);
       }
@@ -90,6 +93,7 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
         stato: _statoSelezionato!,
         priorita: _prioritaSelezionata!,
         dataScadenza: _dataScadenza,
+        tags: _tags,  // ← AGGIUNGI QUESTA RIGA
       );
 
       await ref.read(interventoStateProvider.notifier)
@@ -97,8 +101,8 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('✅ Intervento modificato con successo!'),
+          const SnackBar(
+            content: Text('✅ Intervento modificato con successo!'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -159,6 +163,7 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Titolo
                 TextFormField(
                   controller: _titoloController,
                   decoration: const InputDecoration(
@@ -174,6 +179,8 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Descrizione
                 TextFormField(
                   controller: _descrizioneController,
                   decoration: const InputDecoration(
@@ -190,6 +197,8 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Cliente
                 TextFormField(
                   controller: _clienteController,
                   decoration: const InputDecoration(
@@ -205,6 +214,8 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Tecnico Assegnato
                 TextFormField(
                   controller: _tecnicoController,
                   decoration: const InputDecoration(
@@ -214,6 +225,8 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Data Scadenza
                 TextFormField(
                   controller: _scadenzaController,
                   decoration: const InputDecoration(
@@ -234,7 +247,20 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+
+                // 🔥 TAGS - AGGIUNTO
+                TagsInput(
+                  initialTags: _tags,
+                  onTagsChanged: (tags) {
+                    setState(() {
+                      _tags = tags;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Stato e Priorità
                 Row(
                   children: [
                     Expanded(
@@ -294,6 +320,7 @@ class _ModificaInterventoPageState extends ConsumerState<ModificaInterventoPage>
                   ],
                 ),
                 const SizedBox(height: 32),
+
                 // Pulsante Salva Modifiche
                 ElevatedButton(
                   onPressed: _isSaving ? null : _salvaModifiche,

@@ -36,9 +36,13 @@ lib/
 ├── main.dart                      # Entry point
 └── src/
     ├── core/                      # Utility e costanti
+    │   ├── services/              # Servizi
+    │   │   └── sync_service.dart  # Sincronizzazione push/pull
     │   └── theme/
     │       └── app_theme.dart     # Tema globale
     ├── data/                      # Implementazioni concrete
+    │   ├── datasources/           # Fonti dati
+    │   │   └── api_service.dart   # API REST (server)
     │   ├── models/                # Modelli Isar (@collection)
     │   │   └── intervento_isar.dart
     │   └── repositories/          # Implementazione repository
@@ -53,11 +57,15 @@ lib/
         │   ├── home_page.dart
         │   ├── crea_intervento_page.dart
         │   ├── dettaglio_intervento_page.dart
-        │   └── modifica_intervento_page.dart
+        │   ├── modifica_intervento_page.dart
+        │   └── ricerca_filtri_page.dart  # 🆕 Filtri e ricerca
         ├── providers/             # Riverpod Providers
-        │   └── intervento_providers.dart
+        │   ├── intervento_providers.dart
+        │   ├── filtro_providers.dart      # 🆕 Stato filtri
+        │   └── sync_providers.dart        # 🆕 Stato sincronizzazione
         └── widgets/               # Componenti UI riutilizzabili
-            └── intervento_card.dart
+            ├── intervento_card.dart
+            └── tags_input.dart            # 🆕 Input tags
 ```
 
 ---
@@ -86,36 +94,97 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### 4. Esegui l'app
+# 4. (Opzionale) Avvia il server
+```
+cd server
+npm install
+npm start
+```
+
+# 5. Esegui l'app
 ```
 flutter run
+```
+
+## 🖥️ Server
+Il progetto include un server Node.js di test per la sincronizzazione.
+
+Avvio del server
+
+### 1. Entra nella cartella del server
+```
+cd server
+```
+
+### 2. Installa le dipendenze
+```
+npm install
+```
+
+### 3. Avvia il server
+```
+npm start
+```
+
+Il server sarà disponibile su http://localhost:3000
+
+## Endpoint API
+Metodo | Endpoint | Descrizione
+| :---: | :---: | :---: |
+GET |	/interventi |	Recupera tutti gli interventi
+POST |	/interventi |	Crea un nuovo intervento
+PUT |	/interventi/:id |	Aggiorna un intervento
+DELETE |	/interventi/:id	| Elimina un intervento
+GET |	/health |	Health check
+
+## Configurazione
+Per collegare l'app al server, modifica lib/src/data/datasources/api_service.dart:
+
+```
+static const String baseUrl = 'http://192.168.1.100:3000';  // ← Il tuo IP
+static const bool useMock = false;  // ← false per usare il server reale🖥️ Server
 ```
 
 ---
 
 ## Comandi Utili
-### Generazione codice Isar (dopo modifiche ai modelli)
+
+### Flutter
+
+#### Generazione codice Isar (dopo modifiche ai modelli)
 ```
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### Generazione in watch mode (automatica)
+#### Generazione in watch mode (automatica)
 ```
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-### Pulizia e ricostruzione
+#### Pulizia e ricostruzione
 ```
 flutter clean
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### Esecuzione su dispositivi specifici
+#### Esecuzione su dispositivi specifici
 ```
 flutter run -d chrome      # Web
 flutter run -d android     # Android
 flutter run -d ios         # iOS
+```
+
+### Server
+
+#### Avvia il server
+```
+cd server && npm start
+```
+
+#### Avvia il server in modalità development (auto-reload)
+```
+cd server && npm run dev
 ```
 
 ---
@@ -123,23 +192,55 @@ flutter run -d ios         # iOS
 ## ✅ Features Implementate
 Feature | Stato 
 | :---: | :---: |
-Configurazione base del progetto | ✅
-Clean Architecture (Domain, Data, Presentation) | ✅
-Integrazione Isar (Database offline-first) | ✅
-State Management con Riverpod | ✅
-CRUD completo degli interventi | ✅
-HomePage con lista interventi | ✅
-Creazione nuovi interventi | ✅
-Modifica interventi esistenti | ✅
-Dettaglio intervento | ✅
-Eliminazione interventi | ✅
-Campo Tecnico Assegnato | ✅
-Data Scadenza intervento | ✅
-Sincronizzazione (base) | ✅
-Tema globale e styling omogeneo | ✅
-Card intervento informativa | ✅
-Priorità e Stato con colori dinamici | ✅
-Progresso avanzamento intervento | ✅
+Configurazione base del progetto | ✅ 
+Clean Architecture (Domain, Data, Presentation) | ✅ 
+Integrazione Isar (Database offline-first) | ✅ 
+State Management con Riverpod | ✅ 
+CRUD completo degli interventi | ✅ 
+HomePage con lista interventi | ✅ 
+Creazione nuovi interventi | ✅ 
+Modifica interventi esistenti | ✅ 
+Dettaglio intervento | ✅ 
+Eliminazione interventi (con swipe) | ✅ 
+Campo Tecnico Assegnato | ✅ 
+Data Scadenza intervento | ✅ 
+Sincronizzazione con backend (mock e server reale) | ✅ 
+Tema globale e styling omogeneo | ✅ 
+Card intervento informativa e compatta | ✅ 
+Priorità e Stato con colori dinamici | ✅ 
+Progresso avanzamento intervento | ✅ 
+Filtri e ricerca interventi | ✅ 
+Gestione Tags | ✅ 
+Swipe per eliminare interventi | ✅ 
+Pull-to-refresh per sincronizzare | ✅ 
+Feedback visivo per le operazioni (loading overlay) | ✅ 
+Dialog di conferma per eliminazione | ✅ 
+
+---
+
+### 🔄 IN CORSO
+- [ ] Implementazione server Node.js (già strutturato)
+
+---
+
+## 📝 TODO List
+- [ ] Notifiche push (per scadenze e aggiornamenti)
+
+- [ ] Supporto multiplatform (iOS, Android, Web)
+
+- [ ] Export/Import dati (JSON/CSV)
+
+- [ ] Report e statistiche (dashboard con grafici)
+
+- [ ] Gestione conflitti avanzata per sincronizzazione
+
+- [ ] Test automatizzati (unit test, widget test)
+
+- [ ] Documentazione API
+
+- [ ] CI/CD con GitHub Actions
+
+- [ ] Miglioramento UX/UI con animazioni
 
 ---
 
@@ -197,21 +298,6 @@ dataScadenza |	DateTime? |	Data di scadenza
 stato |	InterventoStato |	Stato corrente
 priorita |	Priorita |	Livello di priorità
 tags |	List<String> |	Tag per categorizzazione
-
----
-
-## 📝 TODO List
-- [ ] Sincronizzazione completa con backend
-
-- [ ] Filtri e ricerca interventi
-
-- [ ] Notifiche push
-
-- [ ] Supporto multiplatform (iOS, Android, Web)
-
-- [ ] Export/Import dati
-
-- [ ] Report e statistiche
 
 ---
 

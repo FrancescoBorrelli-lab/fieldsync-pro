@@ -10,7 +10,11 @@ class InterventoRepositoryImpl implements InterventoRepository {
 
   @override
   Future<List<Intervento>> getAllInterventi() async {
-    final interventiIsar = await isar.interventoIsars.where().findAll();
+    final interventiIsar = await isar.interventoIsars
+        .where()
+        .filter()
+        .eliminatoEqualTo(false)
+        .findAll();
     return interventiIsar.map((e) => e.toDomain()).toList();
   }
 
@@ -20,6 +24,7 @@ class InterventoRepositoryImpl implements InterventoRepository {
         .where()
         .filter()
         .uuidEqualTo(id)
+        .eliminatoEqualTo(false)
         .findFirst();
     return interventoIsar?.toDomain();
   }
@@ -27,7 +32,7 @@ class InterventoRepositoryImpl implements InterventoRepository {
   @override
   Future<void> salvaIntervento(Intervento intervento) async {
     await isar.writeTxn(() async {
-      // 🔥 CERCA SE L'INTERVENTO ESISTE GIÀ
+      // 🔥 CERCA PER UUID
       final existing = await isar.interventoIsars
           .where()
           .filter()
@@ -35,24 +40,26 @@ class InterventoRepositoryImpl implements InterventoRepository {
           .findFirst();
       
       if (existing != null) {
-        // ✅ AGGIORNA L'ESISTENTE
+        // ✅ AGGIORNA ESISTENTE - NON CREARE DUPLICATI
         existing.titolo = intervento.titolo;
         existing.descrizione = intervento.descrizione;
         existing.cliente = intervento.cliente;
         existing.tecnicoAssegnato = intervento.tecnicoAssegnato;
-        existing.dataCreazione = intervento.dataCreazione;
         existing.dataScadenza = intervento.dataScadenza;
         existing.stato = intervento.stato.name;
         existing.priorita = intervento.priorita.name;
         existing.tags = intervento.tags;
         existing.dataUltimaModifica = DateTime.now();
         existing.sincronizzato = false;
-        
+        existing.ultimaModificaDa = 'locale';
+        existing.eliminato = false;
         await isar.interventoIsars.put(existing);
+        print('📝 Intervento aggiornato (UUID: ${intervento.id})');
       } else {
-        // ✅ CREA UN NUOVO
+        // ✅ CREA NUOVO
         final nuovo = InterventoIsar.fromDomain(intervento);
         await isar.interventoIsars.put(nuovo);
+        print('📝 Intervento creato (UUID: ${intervento.id})');
       }
     });
   }
@@ -67,7 +74,11 @@ class InterventoRepositoryImpl implements InterventoRepository {
     
     if (intervento != null) {
       await isar.writeTxn(() async {
-        await isar.interventoIsars.delete(intervento.id);
+        intervento.eliminato = true;
+        intervento.sincronizzato = false;
+        intervento.dataUltimaModifica = DateTime.now();
+        intervento.ultimaModificaDa = 'locale';
+        await isar.interventoIsars.put(intervento);
       });
     }
   }
@@ -78,6 +89,7 @@ class InterventoRepositoryImpl implements InterventoRepository {
         .where()
         .filter()
         .statoEqualTo(stato.name)
+        .eliminatoEqualTo(false)
         .findAll();
     return interventiIsar.map((e) => e.toDomain()).toList();
   }
@@ -88,8 +100,62 @@ class InterventoRepositoryImpl implements InterventoRepository {
         .where()
         .filter()
         .clienteEqualTo(cliente)
+        .eliminatoEqualTo(false)
         .findAll();
     return interventiIsar.map((e) => e.toDomain()).toList();
+  }
+
+  @override
+  Future<List<Intervento>> getInterventiDaSincronizzare() async {
+    final interventiIsar = await isar.interventoIsars
+        .where()
+        .filter()
+        .sincronizzatoEqualTo(false)
+        .eliminatoEqualTo(false)
+        .findAll();
+    return interventiIsar.map((e) => e.toDomain()).toList();
+  }
+
+  @override
+  Future<List<Intervento>> getInterventiEliminati() async {
+    final interventiIsar = await isar.interventoIsars
+        .where()
+        .filter()
+        .eliminatoEqualTo(true)
+        .findAll();
+    return interventiIsar.map((e) => e.toDomain()).toList();
+  }
+
+  @override
+  Future<void> marcaSincronizzato(String id) async {
+    final intervento = await isar.interventoIsars
+        .where()
+        .filter()
+        .uuidEqualTo(id)
+        .findFirst();
+    
+    if (intervento != null) {
+      await isar.writeTxn(() async {
+        intervento.sincronizzato = true;
+        intervento.ultimaModificaDa = 'server';
+        await isar.interventoIsars.put(intervento);
+      });
+    }
+  }
+
+  @override
+  Future<void> marcaEliminatoSuServer(String id) async {
+    final intervento = await isar.interventoIsars
+        .where()
+        .filter()
+        .uuidEqualTo(id)
+        .findFirst();
+    
+    if (intervento != null) {
+      await isar.writeTxn(() async {
+        await isar.interventoIsars.delete(intervento.id);
+      });
+    }
   }
 
   @override
@@ -108,6 +174,24 @@ class InterventoRepositoryImpl implements InterventoRepository {
           await isar.interventoIsars.put(intervento);
         }
       });
+    }
+  }
+
+  @override
+  Future<void> aggiornaUuid(String oldId, String newId) async {
+    final intervento = await isar.interventoIsars
+        .where()
+        .filter()
+        .uuidEqualTo(oldId)
+        .findFirst();
+    
+    if (intervento != null) {
+      await isar.writeTxn(() async {
+        intervento.uuid = newId;
+        intervento.sincronizzato = true;
+        await isar.interventoIsars.put(intervento);
+      });
+      print('🔄 UUID aggiornato: $oldId → $newId');
     }
   }
 }

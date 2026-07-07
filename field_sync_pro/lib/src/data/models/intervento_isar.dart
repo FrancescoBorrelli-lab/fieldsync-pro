@@ -6,7 +6,8 @@ part 'intervento_isar.g.dart';
 
 @Collection()
 class InterventoIsar {
-  Id id = Isar.autoIncrement;
+  int id = Isar.autoIncrement;  // ← CAMBIA QUI
+  
   String? uuid;
   String titolo = '';
   String descrizione = '';
@@ -17,8 +18,11 @@ class InterventoIsar {
   String stato = 'daAssegnare';
   String priorita = 'media';
   List<String> tags = [];
+  
   bool sincronizzato = false;
+  bool eliminato = false;
   DateTime? dataUltimaModifica;
+  String? ultimaModificaDa;
 
   InterventoIsar();
 
@@ -35,7 +39,9 @@ class InterventoIsar {
       ..priorita = intervento.priorita.name
       ..tags = intervento.tags
       ..sincronizzato = false
-      ..dataUltimaModifica = DateTime.now();
+      ..eliminato = false
+      ..dataUltimaModifica = DateTime.now()
+      ..ultimaModificaDa = 'locale';
   }
 
   Intervento toDomain() {

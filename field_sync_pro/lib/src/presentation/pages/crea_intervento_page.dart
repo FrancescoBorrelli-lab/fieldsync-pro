@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/entities/intervento.dart';
 import '../providers/intervento_providers.dart';
+import '../widgets/tags_input.dart';  // ← AGGIUNGI
 
 class CreaInterventoPage extends ConsumerStatefulWidget {
   const CreaInterventoPage({super.key});
@@ -17,11 +19,14 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
   final _titoloController = TextEditingController();
   final _descrizioneController = TextEditingController();
   final _clienteController = TextEditingController();
-  final _tecnicoController = TextEditingController();  // ← AGGIUNTO
+  final _tecnicoController = TextEditingController();
+  final _scadenzaController = TextEditingController();
   
   InterventoStato _statoSelezionato = InterventoStato.daAssegnare;
   Priorita _prioritaSelezionata = Priorita.media;
+  DateTime? _dataScadenza;
   bool _isLoading = false;
+  List<String> _tags = [];  // ← AGGIUNTO
 
   @override
   void dispose() {
@@ -29,7 +34,24 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
     _descrizioneController.dispose();
     _clienteController.dispose();
     _tecnicoController.dispose();
+    _scadenzaController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selezionaData() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 7)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (date != null) {
+      setState(() {
+        _dataScadenza = date;
+        _scadenzaController.text = DateFormat('dd/MM/yyyy').format(date);
+      });
+    }
   }
 
   Future<void> _salvaIntervento() async {
@@ -47,9 +69,10 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
             ? null 
             : _tecnicoController.text.trim(),
         dataCreazione: DateTime.now(),
+        dataScadenza: _dataScadenza,
         stato: _statoSelezionato,
         priorita: _prioritaSelezionata,
-        tags: [],
+        tags: _tags,  // ← AGGIUNTO
         metadata: null,
       );
 
@@ -57,8 +80,8 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('✅ Intervento creato con successo!'),
+          const SnackBar(
+            content: Text('✅ Intervento creato con successo!'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -104,6 +127,7 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Titolo
                 TextFormField(
                   controller: _titoloController,
                   decoration: const InputDecoration(
@@ -119,6 +143,8 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Descrizione
                 TextFormField(
                   controller: _descrizioneController,
                   decoration: const InputDecoration(
@@ -135,6 +161,8 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Cliente
                 TextFormField(
                   controller: _clienteController,
                   decoration: const InputDecoration(
@@ -150,6 +178,8 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                   },
                 ),
                 const SizedBox(height: 16),
+
+                // Tecnico Assegnato
                 TextFormField(
                   controller: _tecnicoController,
                   decoration: const InputDecoration(
@@ -158,15 +188,53 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                     prefixIcon: Icon(Icons.person),
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Data Scadenza
+                TextFormField(
+                  controller: _scadenzaController,
+                  decoration: const InputDecoration(
+                    labelText: 'Data Scadenza',
+                    hintText: 'DD/MM/YYYY (opzionale)',
+                    prefixIcon: Icon(Icons.event),
+                  ),
+                  readOnly: true,
+                  onTap: _selezionaData,
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      try {
+                        DateFormat('dd/MM/yyyy').parse(value);
+                      } catch (_) {
+                        return 'Formato data non valido. Usa DD/MM/YYYY';
+                      }
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 24),
+
+                // 🔥 TAGS - AGGIUNTO
+                TagsInput(
+                  initialTags: _tags,
+                  onTagsChanged: (tags) {
+                    setState(() {
+                      _tags = tags;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // DOPO (usa Flexible invece di Expanded)
                 Row(
                   children: [
-                    Expanded(
+                    Flexible(
+                      flex: 1,
                       child: DropdownButtonFormField<InterventoStato>(
                         value: _statoSelezionato,
                         decoration: const InputDecoration(
                           labelText: 'Stato',
                           prefixIcon: Icon(Icons.flag),
+                          isDense: true,  // ← AGGIUNGI PER COMPATTEZZA
                         ),
                         items: InterventoStato.values.map((stato) {
                           return DropdownMenuItem(
@@ -181,13 +249,15 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                         },
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
+                    const SizedBox(width: 12),
+                    Flexible(
+                      flex: 1,
                       child: DropdownButtonFormField<Priorita>(
                         value: _prioritaSelezionata,
                         decoration: const InputDecoration(
                           labelText: 'Priorità',
                           prefixIcon: Icon(Icons.priority_high),
+                          isDense: true,  // ← AGGIUNGI PER COMPATTEZZA
                         ),
                         items: Priorita.values.map((priorita) {
                           return DropdownMenuItem(
@@ -202,7 +272,7 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                                     color: priorita.color,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 6),
                                 Text(_getPrioritaLabel(priorita)),
                               ],
                             ),
@@ -218,7 +288,8 @@ class _CreaInterventoPageState extends ConsumerState<CreaInterventoPage> {
                   ],
                 ),
                 const SizedBox(height: 32),
-                // Pulsante Crea Intervento
+
+                // Bottone Crea
                 ElevatedButton(
                   onPressed: _isLoading ? null : _salvaIntervento,
                   style: ElevatedButton.styleFrom(

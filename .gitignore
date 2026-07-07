@@ -65,15 +65,15 @@ macos/
 linux/
 
 # Server (Node.js) - 🔥 AGGIUNTO
-server/node_modules/
-server/package-lock.json
-server/db.json
-server/*.log
-server/.env
-server/.env.local
-server/npm-debug.log*
-server/yarn-debug.log*
-server/yarn-error.log*
+field_sync_server/node_modules/
+field_sync_server/package-lock.json
+field_sync_server/db.json
+field_sync_server/*.log
+field_sync_server/.env
+field_sync_server/.env.local
+field_sync_server/npm-debug.log*
+field_sync_server/yarn-debug.log*
+field_sync_server/yarn-error.log*
 
 # Files di test e temporanei
 *.test.dart

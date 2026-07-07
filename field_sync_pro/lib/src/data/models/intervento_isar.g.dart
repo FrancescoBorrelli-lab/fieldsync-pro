@@ -42,38 +42,48 @@ const InterventoIsarSchema = CollectionSchema(
       name: r'descrizione',
       type: IsarType.string,
     ),
-    r'priorita': PropertySchema(
+    r'eliminato': PropertySchema(
       id: 5,
+      name: r'eliminato',
+      type: IsarType.bool,
+    ),
+    r'priorita': PropertySchema(
+      id: 6,
       name: r'priorita',
       type: IsarType.string,
     ),
     r'sincronizzato': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'sincronizzato',
       type: IsarType.bool,
     ),
     r'stato': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'stato',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'tecnicoAssegnato': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'tecnicoAssegnato',
       type: IsarType.string,
     ),
     r'titolo': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'titolo',
       type: IsarType.string,
     ),
+    r'ultimaModificaDa': PropertySchema(
+      id: 12,
+      name: r'ultimaModificaDa',
+      type: IsarType.string,
+    ),
     r'uuid': PropertySchema(
-      id: 11,
+      id: 13,
       name: r'uuid',
       type: IsarType.string,
     )
@@ -117,6 +127,12 @@ int _interventoIsarEstimateSize(
   }
   bytesCount += 3 + object.titolo.length * 3;
   {
+    final value = object.ultimaModificaDa;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.uuid;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -136,13 +152,15 @@ void _interventoIsarSerialize(
   writer.writeDateTime(offsets[2], object.dataScadenza);
   writer.writeDateTime(offsets[3], object.dataUltimaModifica);
   writer.writeString(offsets[4], object.descrizione);
-  writer.writeString(offsets[5], object.priorita);
-  writer.writeBool(offsets[6], object.sincronizzato);
-  writer.writeString(offsets[7], object.stato);
-  writer.writeStringList(offsets[8], object.tags);
-  writer.writeString(offsets[9], object.tecnicoAssegnato);
-  writer.writeString(offsets[10], object.titolo);
-  writer.writeString(offsets[11], object.uuid);
+  writer.writeBool(offsets[5], object.eliminato);
+  writer.writeString(offsets[6], object.priorita);
+  writer.writeBool(offsets[7], object.sincronizzato);
+  writer.writeString(offsets[8], object.stato);
+  writer.writeStringList(offsets[9], object.tags);
+  writer.writeString(offsets[10], object.tecnicoAssegnato);
+  writer.writeString(offsets[11], object.titolo);
+  writer.writeString(offsets[12], object.ultimaModificaDa);
+  writer.writeString(offsets[13], object.uuid);
 }
 
 InterventoIsar _interventoIsarDeserialize(
@@ -157,14 +175,16 @@ InterventoIsar _interventoIsarDeserialize(
   object.dataScadenza = reader.readDateTimeOrNull(offsets[2]);
   object.dataUltimaModifica = reader.readDateTimeOrNull(offsets[3]);
   object.descrizione = reader.readString(offsets[4]);
+  object.eliminato = reader.readBool(offsets[5]);
   object.id = id;
-  object.priorita = reader.readString(offsets[5]);
-  object.sincronizzato = reader.readBool(offsets[6]);
-  object.stato = reader.readString(offsets[7]);
-  object.tags = reader.readStringList(offsets[8]) ?? [];
-  object.tecnicoAssegnato = reader.readStringOrNull(offsets[9]);
-  object.titolo = reader.readString(offsets[10]);
-  object.uuid = reader.readStringOrNull(offsets[11]);
+  object.priorita = reader.readString(offsets[6]);
+  object.sincronizzato = reader.readBool(offsets[7]);
+  object.stato = reader.readString(offsets[8]);
+  object.tags = reader.readStringList(offsets[9]) ?? [];
+  object.tecnicoAssegnato = reader.readStringOrNull(offsets[10]);
+  object.titolo = reader.readString(offsets[11]);
+  object.ultimaModificaDa = reader.readStringOrNull(offsets[12]);
+  object.uuid = reader.readStringOrNull(offsets[13]);
   return object;
 }
 
@@ -186,18 +206,22 @@ P _interventoIsarDeserializeProp<P>(
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
-    case 6:
       return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 8:
-      return (reader.readStringList(offset) ?? []) as P;
-    case 9:
-      return (reader.readStringOrNull(offset)) as P;
-    case 10:
       return (reader.readString(offset)) as P;
+    case 9:
+      return (reader.readStringList(offset) ?? []) as P;
+    case 10:
+      return (reader.readStringOrNull(offset)) as P;
     case 11:
+      return (reader.readString(offset)) as P;
+    case 12:
+      return (reader.readStringOrNull(offset)) as P;
+    case 13:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -772,6 +796,16 @@ extension InterventoIsarQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'descrizione',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      eliminatoEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'eliminato',
+        value: value,
       ));
     });
   }
@@ -1629,6 +1663,160 @@ extension InterventoIsarQueryFilter
   }
 
   QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'ultimaModificaDa',
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'ultimaModificaDa',
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ultimaModificaDa',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'ultimaModificaDa',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'ultimaModificaDa',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'ultimaModificaDa',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'ultimaModificaDa',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'ultimaModificaDa',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'ultimaModificaDa',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'ultimaModificaDa',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ultimaModificaDa',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
+      ultimaModificaDaIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'ultimaModificaDa',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterFilterCondition>
       uuidIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1860,6 +2048,19 @@ extension InterventoIsarQuerySortBy
     });
   }
 
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy> sortByEliminato() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'eliminato', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy>
+      sortByEliminatoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'eliminato', Sort.desc);
+    });
+  }
+
   QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy> sortByPriorita() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'priorita', Sort.asc);
@@ -1923,6 +2124,20 @@ extension InterventoIsarQuerySortBy
       sortByTitoloDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'titolo', Sort.desc);
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy>
+      sortByUltimaModificaDa() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ultimaModificaDa', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy>
+      sortByUltimaModificaDaDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ultimaModificaDa', Sort.desc);
     });
   }
 
@@ -2010,6 +2225,19 @@ extension InterventoIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy> thenByEliminato() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'eliminato', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy>
+      thenByEliminatoDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'eliminato', Sort.desc);
+    });
+  }
+
   QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -2088,6 +2316,20 @@ extension InterventoIsarQuerySortThenBy
     });
   }
 
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy>
+      thenByUltimaModificaDa() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ultimaModificaDa', Sort.asc);
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy>
+      thenByUltimaModificaDaDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'ultimaModificaDa', Sort.desc);
+    });
+  }
+
   QueryBuilder<InterventoIsar, InterventoIsar, QAfterSortBy> thenByUuid() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'uuid', Sort.asc);
@@ -2138,6 +2380,13 @@ extension InterventoIsarQueryWhereDistinct
     });
   }
 
+  QueryBuilder<InterventoIsar, InterventoIsar, QDistinct>
+      distinctByEliminato() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'eliminato');
+    });
+  }
+
   QueryBuilder<InterventoIsar, InterventoIsar, QDistinct> distinctByPriorita(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2177,6 +2426,14 @@ extension InterventoIsarQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'titolo', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<InterventoIsar, InterventoIsar, QDistinct>
+      distinctByUltimaModificaDa({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'ultimaModificaDa',
+          caseSensitive: caseSensitive);
     });
   }
 
@@ -2229,6 +2486,12 @@ extension InterventoIsarQueryProperty
     });
   }
 
+  QueryBuilder<InterventoIsar, bool, QQueryOperations> eliminatoProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'eliminato');
+    });
+  }
+
   QueryBuilder<InterventoIsar, String, QQueryOperations> prioritaProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'priorita');
@@ -2263,6 +2526,13 @@ extension InterventoIsarQueryProperty
   QueryBuilder<InterventoIsar, String, QQueryOperations> titoloProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'titolo');
+    });
+  }
+
+  QueryBuilder<InterventoIsar, String?, QQueryOperations>
+      ultimaModificaDaProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'ultimaModificaDa');
     });
   }
 
