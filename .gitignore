@@ -4,6 +4,9 @@
 .buildlog/
 .history
 .svn/
+*.log
+*.tmp
+*.temp
 
 # Flutter/Dart
 .dart_tool/
@@ -16,8 +19,69 @@ pubspec.lock
 # IDE specific
 .idea/
 .vscode/
+*.iml
+*.iws
+*.swp
+*.swo
 
 # Configurazione locale (IMPORTANTE)
 .env
 .env.*
 !.env.example
+
+# Android
+*.apk
+*.aab
+*.keystore
+android/app/debug.keystore
+android/local.properties
+android/.gradle
+android/.idea
+android/*.iml
+
+# iOS
+*.xcworkspace
+*.xcuserstate
+Podfile.lock
+Pods/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/.generated/
+
+# Web
+.web/
+web/
+
+# Windows
+windows/
+*.exe
+
+# macOS
+macos/
+
+# Linux
+linux/
+
+# Server (Node.js) - 🔥 AGGIUNTO
+server/node_modules/
+server/package-lock.json
+server/db.json
+server/*.log
+server/.env
+server/.env.local
+server/npm-debug.log*
+server/yarn-debug.log*
+server/yarn-error.log*
+
+# Files di test e temporanei
+*.test.dart
+*.golden.dart
+coverage/
+test/.test_coverage.dart
+
+# Backup
+*.bak
+*.backup
+*.old
