@@ -6,8 +6,7 @@ part 'intervento_isar.g.dart';
 
 @Collection()
 class InterventoIsar {
-  @Index()
-  int id = Isar.autoIncrement;  // ← CAMBIA QUI
+  Id id = Isar.autoIncrement;
   
   String? uuid;
   String titolo = '';

@@ -2,8 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.14:3000';
-  static const bool useMock = true; // ← SETTA A false quando hai backend reale
+  // Configurabili da riga di comando, senza toccare il codice:
+  //   flutter run --dart-define=USE_MOCK=false --dart-define=API_BASE_URL=http://<ip>:3000
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://localhost:3000',
+  );
+  static const bool useMock = bool.fromEnvironment('USE_MOCK', defaultValue: true);
 
   // HEADERS
   Map<String, String> get _headers => {
